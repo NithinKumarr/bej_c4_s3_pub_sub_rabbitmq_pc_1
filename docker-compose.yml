@@ -1,0 +1,49 @@
+version: "3.9"
+services:
+  mysqlservices1:
+    image: mysql:latest
+    ports:
+      - "3308:3308"
+    container_name: mysql-container
+    networks:
+      - user-net
+    environment:
+      MYSQL_ROOT_PASSWORD: Root
+      MYSQL_USERNAME: ROOT
+      MYSQL_PASSWORD: ROOT
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+
+  mongodbservices:
+    image: mongo:latest
+    container_name: mongo-product-container
+    networks:
+      - springCloud-track-net
+    ports:
+      - "27017:27107"
+
+  user-authentication-services:
+    build: C14_S1_Demo/
+    networks:
+      - user-net
+    ports:
+      - "8039:8039"
+    depends_on:
+      - mysqlservices1
+    restart: always
+
+  product-services:
+    build: C13_S3_demo/
+    networks:
+      - springCloud-track-net
+    ports:
+      - "65110:65110"
+    depends_on:
+      - mongodbservices
+    restart: always
+
+networks:
+  user-net:
+    driver: bridge
+  springCloud-track-net:
+    driver: bridge
+
